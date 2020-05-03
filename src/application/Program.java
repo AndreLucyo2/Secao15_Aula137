@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Scanner;
 
 import model.entities.Reservation;
-import model.exceptions.DomainException;
 
 // Problema exemplo
 // Fazer um programa para ler os dados de uma reserva de hotel (número do quarto, data
@@ -19,8 +18,14 @@ import model.exceptions.DomainException;
 public class Program
 {
 
-	// • Solução 1 (muito ruim): lógica de validação no programa principal
-	// • Lógica de validação não delegada à reserva
+	// • Solução 2 (ruim): método retornando string
+	// • A semântica da operação é prejudicada
+	// • Retornar string não tem nada a ver com atualização de reserva
+	// • E se a operação tivesse que retornar um string?
+	// • Ainda não é possível tratar exceções em construtores
+	// • Ainda não há auxílio do compilador: o programador deve "lembrar" de
+	// verificar se houve erro
+	// • A lógica fica estruturada em condicionais aninhadas
 
 	public static void main(String[] args) throws ParseException
 	{
@@ -34,7 +39,8 @@ public class Program
 		System.out.print("Check-out date (dd/MM/yyyy): ");
 		Date checkOut = sdf.parse(sc.next());
 
-		if (!checkOut.after(checkIn))//Valida se a data de checkOut é posterior ao checkIn
+		
+		if (!checkOut.after(checkIn))// Valida se a data de checkOut é posterior ao checkIn
 		{
 			System.out.println("Error in reservation: Check-out date must be after check-in date");
 		}
@@ -50,18 +56,16 @@ public class Program
 			System.out.print("Check-out date (dd/MM/yyyy): ");
 			checkOut = sdf.parse(sc.next());
 
-			Date now = new Date();//data com horario de agora
-			if (checkIn.before(now) || checkOut.before(now)) //so atualiza datas se forem datas futuras
+			//que indica se retornou erro ou não: o metodo retornar o string se der erro:
+			String error = reservation.updateDates(checkIn, checkOut);
+			
+			//Testa se retornou algum erro:
+			if (error != null)
 			{
-				System.out.println("Error in reservation: Reservation dates for update must be future dates");
-			}
-			else if (!checkOut.after(checkIn))
-			{
-				System.out.println("Error in reservation: Check-out date must be after check-in date");
+				System.out.println("Error in reservation: " + error);
 			}
 			else
 			{
-				reservation.updateDates(checkIn, checkOut);
 				System.out.println("Reservation: " + reservation);
 			}
 		}

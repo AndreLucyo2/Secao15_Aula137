@@ -4,13 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import model.exceptions.DomainException;
-
 /**
  * Reserva de hotel
  */
 public class Reservation
-{			
+{
 
 	private Integer roomNumber;
 	private Date checkIn;
@@ -57,15 +55,30 @@ public class Reservation
 	}
 
 	/**
-	 * Atualiza as datas
+	 * Atualiza as datas retorna um string conforme o erro
 	 * 
 	 * @param checkIn
 	 * @param checkOut
 	 */
-	public void updateDates(Date checkIn, Date checkOut)
+	public String updateDates(Date checkIn, Date checkOut)
 	{
+		Date now = new Date();
+		if (checkIn.before(now) || checkOut.before(now))
+		{
+			return "Reservation dates for update must be future dates";
+		}
+		
+		if (!checkOut.after(checkIn))
+		{
+			return "Check-out date must be after check-in date";
+		}
+		
+		//Logica que atualiza a data:
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
+		
+		//se retornar null quer dizer que nao deu erro:
+		return null;
 	}
 
 	@Override
